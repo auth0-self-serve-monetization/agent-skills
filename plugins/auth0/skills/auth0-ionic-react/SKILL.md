@@ -1,6 +1,6 @@
 ---
-name: auth0-ionic-vue
-description: Use when adding Auth0 authentication to an Ionic Vue application with Capacitor — integrates @auth0/auth0-vue SDK with Capacitor Browser and App plugins for native iOS/Android deep linking, login, logout, and user profile display.
+name: auth0-ionic-react
+description: Use when adding Auth0 authentication to an Ionic React application with Capacitor — integrates @auth0/auth0-react SDK with Capacitor Browser and App plugins for native iOS/Android deep linking, login, logout, and user profile display.
 license: Proprietary
 metadata:
   author: Auth0 <support@auth0.com>
@@ -8,19 +8,15 @@ metadata:
   openclaw:
     emoji: "\U0001F510"
     homepage: https://github.com/auth0/agent-skills
-    requires:
-      bins:
-        - gh
-        - node
 ---
 
-# Auth0 Ionic Vue (Capacitor) Integration
+# Auth0 Ionic React (Capacitor) Integration
 
-Add Auth0 authentication to Ionic Vue applications using Capacitor. This skill covers native mobile authentication using the `@auth0/auth0-vue` SDK combined with `@capacitor/browser` and `@capacitor/app` plugins for deep link handling on iOS and Android.
+Add Auth0 authentication to Ionic React applications using Capacitor. This skill covers native mobile authentication using the `@auth0/auth0-react` SDK combined with `@capacitor/browser` and `@capacitor/app` plugins for deep link handling on iOS and Android.
 
 > **Agent instruction:** Before providing SDK setup instructions, fetch the latest release version by running:
 > ```bash
-> gh api repos/auth0/auth0-vue/releases/latest --jq '.tag_name'
+> gh api repos/auth0/auth0-react/releases/latest --jq '.tag_name'
 > ```
 > Use the returned version in all dependency lines instead of any hardcoded version below.
 
@@ -28,7 +24,7 @@ Add Auth0 authentication to Ionic Vue applications using Capacitor. This skill c
 
 - Node.js 18+
 - Ionic CLI (`npm install -g @ionic/cli`)
-- An existing Ionic Vue application with Capacitor configured
+- An existing Ionic React application with Capacitor configured
 - Auth0 account and tenant
 - For iOS: Xcode 14+ and CocoaPods
 - For Android: Android Studio with API level 21+
@@ -38,14 +34,12 @@ Add Auth0 authentication to Ionic Vue applications using Capacitor. This skill c
 
 | Use Case | Recommended Skill |
 |----------|------------------|
-| Vue SPA (no Capacitor/Ionic) | `auth0-vue` |
 | React SPA (no Capacitor/Ionic) | `auth0-react` |
 | React Native (bare CLI) | `auth0-react-native` |
 | Expo (React Native) | `auth0-expo` |
-| Ionic + React + Capacitor | `auth0-ionic-react` |
 | Ionic + Angular + Capacitor | `auth0-ionic-angular` |
+| Ionic + Vue + Capacitor | `auth0-ionic-vue` |
 | Next.js (server-side) | `auth0-nextjs` |
-| Nuxt (server-side) | `auth0-nuxt` |
 | iOS native (Swift) | `auth0-swift` |
 | Android native (Kotlin) | `auth0-android` |
 
@@ -60,25 +54,34 @@ Add Auth0 authentication to Ionic Vue applications using Capacitor. This skill c
 ### Step 1: Configure Auth0
 
 > **Agent instruction:** Always ask the user how they want to configure Auth0 using `AskUserQuestion`:
-> _"How would you like to configure Auth0 for this Ionic Vue project?"_
->   - **Automatic setup (Recommended)** — uses the Auth0 CLI to create a Native application, configure callback URLs, and store credentials in the project `.env` file automatically
+> _"How would you like to configure Auth0 for this Ionic React project?"_
+>   - **Automatic setup (Recommended)** — uses the Auth0 CLI to create a Native application, configure callback URLs, and store credentials in the project config files automatically
 >   - **Manual setup** — you provide an existing `.env` file or Auth0 credentials (domain, client ID) and the agent writes them to the project config
 >
 > Follow the matching section below based on their choice.
 
 #### Automatic Setup
 
-> **Agent instruction:** Follow the automated setup in [Setup Guide — Auth0 CLI Automated Setup](./references/setup.md#auth0-cli-automated-setup) to:
->   1. Verify the Auth0 CLI is installed (install if missing).
->   2. Verify the user is logged in to the Auth0 CLI (prompt to run `auth0 login` if not).
->   3. Detect the active Auth0 tenant domain.
->   4. Read `capacitor.config.ts` to get the app's package ID.
->   5. Create a Native Auth0 application via `auth0 apps create` with proper callback URLs.
->   6. Extract `client_id` and `domain` from the CLI output. **Do NOT display these values in your response.**
->   7. Write `.env` with `VITE_AUTH0_DOMAIN`, `VITE_AUTH0_CLIENT_ID`, and `VITE_AUTH0_CALLBACK_URI`.
->   8. Update `src/main.ts` to read credentials from `import.meta.env`.
+> **Agent instruction:** Follow [Setup Guide — Auth0 Configuration](./references/setup.md#auth0-configuration) for pre-flight checks and CLI commands.
 >
-> If any CLI command fails after 3 retries, fall back to **Manual Setup** below.
+> 1. Detect the package ID from `capacitor.config.ts` (`appId` field).
+> 2. Get the Auth0 domain from the active tenant: `auth0 tenants list --csv --no-input` (parse the `→` line).
+> 3. Create a Native application:
+>    ```bash
+>    auth0 apps create \
+>      --name "APP_NAME" \
+>      --type native \
+>      --callbacks "PACKAGE_ID://DOMAIN/capacitor/PACKAGE_ID/callback" \
+>      --logout-urls "PACKAGE_ID://DOMAIN/capacitor/PACKAGE_ID/callback" \
+>      --origins "capacitor://localhost,http://localhost" \
+>      --json \
+>      --no-input
+>    ```
+>    Parse the JSON output to extract `client_id`. **Do NOT display the extracted credentials (domain, client ID) in your response — write them directly into the project config files.**
+> 4. Write the extracted `domain` and `client_id` to the project `.env` file. Detect whether the project uses Vite (`VITE_` prefix) or CRA (`REACT_APP_` prefix) and use the appropriate variable names.
+>
+> If any CLI command fails due to session expiry, ask the user to run `auth0 login` again, then retry up to 3 times.
+> Only if the CLI keeps failing after retries: fall back to **Manual Setup** below.
 
 #### Manual Setup
 
@@ -86,143 +89,102 @@ Add Auth0 authentication to Ionic Vue applications using Capacitor. This skill c
 > - **An `.env` file path** — read the file to extract the Auth0 domain and client ID, then copy or reference it in the project.
 > - **Direct credentials** — ask using `AskUserQuestion`: _"Please provide your Auth0 Domain and Client ID."_
 >
-> Once credentials are obtained, write them to the project `.env` file using `VITE_AUTH0_DOMAIN` and `VITE_AUTH0_CLIENT_ID` variable names. **Do NOT display the credentials in conversation output.**
+> Once credentials are obtained, write them to the project `.env` file. Detect whether the project uses Vite (`VITE_` prefix) or CRA (`REACT_APP_` prefix) and use the appropriate variable names. **Do NOT display the credentials in conversation output.**
 
 ### Step 2: Install Dependencies
 
 ```bash
-npm install @auth0/auth0-vue @capacitor/browser @capacitor/app
+npm install @auth0/auth0-react @capacitor/browser @capacitor/app
 npx cap sync
 ```
 
-### Step 3: Set Up Auth0 Plugin
+### Step 3: Set Up Auth0Provider
 
-> **Agent instruction:** If Step 1 already wrote `.env` and updated `src/main.ts`, verify the configuration looks correct and skip to Step 4. Only use the template below if configuring manually.
+Wrap the app root with `Auth0Provider`, configuring it for Capacitor. In `src/main.tsx`:
 
-Register the Auth0 Vue plugin in your app entry point (`src/main.ts`), configuring it for Capacitor. Credentials are read from `.env` via `import.meta.env`:
+```tsx
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { Auth0Provider } from '@auth0/auth0-react';
+import App from './App';
 
-```typescript
-import { createApp } from 'vue';
-import { createAuth0 } from '@auth0/auth0-vue';
-import { IonicVue } from '@ionic/vue';
-import App from './App.vue';
-import router from './router';
+const domain = import.meta.env.VITE_AUTH0_DOMAIN;
+const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
+const packageId = import.meta.env.VITE_AUTH0_PACKAGE_ID; // e.g., com.example.myapp
 
-// Agent: read appId from capacitor.config.ts and replace this value
-const packageId = "YOUR_PACKAGE_ID";
+const redirectUri = `${packageId}://${domain}/capacitor/${packageId}/callback`;
 
-const app = createApp(App);
-
-app.use(IonicVue);
-app.use(router);
-app.use(
-  createAuth0({
-    domain: import.meta.env.VITE_AUTH0_DOMAIN,
-    clientId: import.meta.env.VITE_AUTH0_CLIENT_ID,
-    useRefreshTokens: true,
-    useRefreshTokensFallback: false,
-    authorizationParams: {
-      redirect_uri: `${packageId}://${import.meta.env.VITE_AUTH0_DOMAIN}/capacitor/${packageId}/callback`
-    }
-  })
+createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <Auth0Provider
+      domain={domain}
+      clientId={clientId}
+      useRefreshTokens={true}
+      useRefreshTokensFallback={false}
+      authorizationParams={{
+        redirect_uri: redirectUri
+      }}
+    >
+      <App />
+    </Auth0Provider>
+  </React.StrictMode>
 );
-
-router.isReady().then(() => {
-  app.mount('#app');
-});
 ```
 
 ### Step 4: Implement Login with Capacitor Browser
 
-```vue
-<script setup lang="ts">
-import { useAuth0 } from '@auth0/auth0-vue';
+```tsx
+import { useAuth0 } from '@auth0/auth0-react';
 import { Browser } from '@capacitor/browser';
-import { IonButton } from '@ionic/vue';
 
 const { loginWithRedirect } = useAuth0();
 
 const login = async () => {
   await loginWithRedirect({
-    async openUrl(url: string) {
+    async openUrl(url) {
       await Browser.open({ url, windowName: "_self" });
     }
   });
 };
-</script>
-
-<template>
-  <ion-button @click="login">Log in</ion-button>
-</template>
 ```
 
 ### Step 5: Handle Callback via Deep Link
 
-Handle the deep link callback in your App.vue component. This must run on app initialization:
-
-```vue
-<script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue';
-import { useAuth0 } from '@auth0/auth0-vue';
+```tsx
+import { useEffect } from 'react';
 import { App as CapApp } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
-import { IonApp, IonRouterOutlet } from '@ionic/vue';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const { handleRedirectCallback } = useAuth0();
 
-let urlOpenListener: any;
-
-onMounted(async () => {
-  urlOpenListener = await CapApp.addListener('appUrlOpen', async ({ url }) => {
+useEffect(() => {
+  const listener = CapApp.addListener('appUrlOpen', async ({ url }) => {
     if (url.includes('state') && (url.includes('code') || url.includes('error'))) {
       await handleRedirectCallback(url);
     }
     await Browser.close();
   });
-});
 
-onUnmounted(() => {
-  urlOpenListener?.remove();
-});
-</script>
-
-<template>
-  <ion-app>
-    <ion-router-outlet />
-  </ion-app>
-</template>
+  return () => {
+    listener.then(l => l.remove());
+  };
+}, [handleRedirectCallback]);
 ```
 
 ### Step 6: Implement Logout
 
-```vue
-<script setup lang="ts">
-import { useAuth0 } from '@auth0/auth0-vue';
-import { Browser } from '@capacitor/browser';
-import { IonButton } from '@ionic/vue';
-
-const domain = import.meta.env.VITE_AUTH0_DOMAIN;
-// Agent: read appId from capacitor.config.ts and replace this value
-const packageId = "YOUR_PACKAGE_ID";)
-const logoutUri = `${packageId}://${domain}/capacitor/${packageId}/callback`;
-
-const { logout } = useAuth0();
-
+```tsx
 const doLogout = async () => {
   await logout({
     logoutParams: {
-      returnTo: logoutUri
+      returnTo: `${packageId}://${domain}/capacitor/${packageId}/callback`
     },
-    async openUrl(url: string) {
+    async openUrl(url) {
       await Browser.open({ url, windowName: "_self" });
     }
   });
 };
-</script>
-
-<template>
-  <ion-button @click="doLogout">Log out</ion-button>
-</template>
 ```
 
 ### Step 7: Build and Test
@@ -238,9 +200,9 @@ const doLogout = async () => {
 
 ## Detailed Documentation
 
-- **[Setup Guide](./references/setup.md)** — Auth0 CLI automated setup (login, app creation, credential injection), Capacitor URL scheme registration, secret management
+- **[Setup Guide](./references/setup.md)** — Auth0 CLI configuration, Capacitor URL scheme registration, secret management
 - **[Integration Patterns](./references/integration.md)** — Login/logout with Capacitor Browser, deep link callback handling, user profile, protected routes, token access, error handling
-- **[Testing & Reference](./references/api.md)** — Full API reference for createAuth0 options, useAuth0 composable, Capacitor plugin configuration, testing checklist, common issues
+- **[Testing & Reference](./references/api.md)** — Full API reference for Auth0Provider props, useAuth0 hook, Capacitor plugin configuration, testing checklist, common issues
 
 ## Common Mistakes
 
@@ -248,15 +210,15 @@ const doLogout = async () => {
 |---------|-----|
 | App type not set to **Native** in Auth0 Dashboard | Change application type to "Native" in Dashboard settings |
 | Missing or incorrect callback URL format | Use `YOUR_PACKAGE_ID://YOUR_DOMAIN/capacitor/YOUR_PACKAGE_ID/callback` — must match exactly |
-| Not enabling refresh tokens | Set `useRefreshTokens: true` and `useRefreshTokensFallback: false` in `createAuth0()` |
+| Not enabling refresh tokens | Set `useRefreshTokens={true}` and `useRefreshTokensFallback={false}` on Auth0Provider |
 | Missing `@capacitor/browser` or `@capacitor/app` | Install both: `npm install @capacitor/browser @capacitor/app && npx cap sync` |
 | Not handling deep link callback | Add `CapApp.addListener('appUrlOpen', ...)` to process Auth0 redirect |
 | Forgetting `npx cap sync` after install | Always run `npx cap sync` after installing Capacitor plugins |
 | Using `window.location.origin` as redirect URI | Use the custom URL scheme (`packageId://domain/...`), not `http://localhost` |
 | Missing Allowed Origins in Dashboard | Add `capacitor://localhost, http://localhost` to Allowed Origins |
-| Not calling `app.use(createAuth0(...))` before mount | Register Auth0 plugin before calling `app.mount('#app')` |
-| Accessing `.value` incorrectly on auth refs | `useAuth0()` returns Vue refs — use `.value` in `<script>`, template unwraps automatically |
-| localStorage treated as persistent on mobile | Use refresh tokens (`useRefreshTokens: true`) for reliable token persistence |
+| localStorage treated as persistent on mobile | Use refresh tokens (`useRefreshTokens={true}`) for reliable token persistence |
+| iOS SSO not working | SFSafariViewController doesn't share cookies with Safari on iOS 11+; this is expected |
+| Not testing on physical device | Always test auth flows on a physical device; simulators may not handle deep links correctly |
 
 ## WebAuth Method
 
@@ -266,9 +228,9 @@ Unlike standard native SDKs that use `https://{domain}/android/{packageId}/callb
 
 ## Related Skills
 
-- **auth0-vue** — Vue SPA (browser-only, no Capacitor)
-- **auth0-ionic-react** — Ionic with React and Capacitor
+- **auth0-react** — React SPA (browser-only, no Capacitor)
 - **auth0-ionic-angular** — Ionic with Angular and Capacitor
+- **auth0-ionic-vue** — Ionic with Vue and Capacitor
 - **auth0-react-native** — React Native (bare CLI, no Ionic/Capacitor)
 - **auth0-expo** — Expo (React Native) with Auth0
 
@@ -276,23 +238,23 @@ Unlike standard native SDKs that use `https://{domain}/android/{packageId}/callb
 
 | API | Description |
 |-----|-------------|
-| `createAuth0(options)` | Vue plugin factory — registers Auth0 with `app.use()` |
-| `useAuth0()` | Composable — returns `{ isLoading, isAuthenticated, user, loginWithRedirect, logout, getAccessTokenSilently, handleRedirectCallback, error }` |
+| `Auth0Provider` | Context provider — wraps app root with Auth0 config |
+| `useAuth0()` | Hook — returns `{ isLoading, isAuthenticated, user, loginWithRedirect, logout, getAccessTokenSilently, handleRedirectCallback }` |
 | `loginWithRedirect({ openUrl })` | Login via Universal Login — use `Browser.open()` in `openUrl` callback |
 | `logout({ logoutParams, openUrl })` | Logout — use `Browser.open()` in `openUrl` callback |
 | `handleRedirectCallback(url)` | Process Auth0 callback URL from deep link |
 | `getAccessTokenSilently()` | Get access token (uses refresh tokens on mobile) |
-| `createAuthGuard(app)` | Vue Router navigation guard factory for protected routes |
+| `withAuthenticationRequired(Component)` | HOC to protect routes |
 | `Browser.open({ url })` | Capacitor — opens URL in system browser (SFSafariViewController / Chrome Custom Tabs) |
 | `CapApp.addListener('appUrlOpen', cb)` | Capacitor — listens for deep link events |
 | `Browser.close()` | Capacitor — closes the in-app browser after callback |
 
 ## References
 
-- [Auth0 Ionic Vue Quickstart](https://auth0.com/docs/quickstart/native/ionic-vue/interactive)
-- [Auth0 Vue SDK GitHub](https://github.com/auth0/auth0-vue)
-- [Auth0 Vue SDK API Reference](https://auth0.github.io/auth0-vue/)
-- [Ionic Vue Capacitor Sample App](https://github.com/auth0-samples/auth0-ionic-samples/tree/main/vue)
+- [Auth0 Ionic React Quickstart](https://auth0.com/docs/quickstart/native/ionic-react/interactive)
+- [Auth0 React SDK GitHub](https://github.com/auth0/auth0-react)
+- [Auth0 React SDK API Reference](https://auth0.github.io/auth0-react/)
+- [Ionic React Capacitor Sample App](https://github.com/auth0-samples/auth0-ionic-samples/tree/main/react)
 - [Capacitor Browser Plugin](https://capacitorjs.com/docs/apis/browser)
 - [Capacitor App Plugin](https://capacitorjs.com/docs/apis/app)
 - [Auth0 Dashboard](https://manage.auth0.com/)
