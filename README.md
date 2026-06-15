@@ -1,6 +1,6 @@
 ![Auth0 Agent Skills](https://cdn.auth0.com/website/sdks/banners/agent-skills.png)
 
-# Auth0 Agent Skills - Larry G
+# Auth0 Agent Skills
 
 [![License](https://img.shields.io/:license-apache-blue.svg?style=flat)](https://opensource.org/licenses/Apache-2.0)
 
