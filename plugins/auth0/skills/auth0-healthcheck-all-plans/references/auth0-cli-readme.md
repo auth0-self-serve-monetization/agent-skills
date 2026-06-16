@@ -1,0 +1,237 @@
+# Auth0 CLI
+
+[![GoDoc](https://pkg.go.dev/badge/github.com/auth0/auth0-cli.svg)](https://pkg.go.dev/github.com/auth0/auth0-cli)
+[![Release](https://img.shields.io/github/v/release/auth0/auth0-cli)](https://github.com/auth0/auth0-cli/releases)
+
+> Source: <https://github.com/auth0/auth0-cli>. Cleaned copy of the project's README for offline reference inside the `auth0-checkmate` skill.
+
+Build, manage and test your [Auth0](https://auth0.com/) integrations from the command line.
+
+## Highlights
+
+- **Test your universal login flow:** Emulate your end users' login experience by running `auth0 test login`.
+- **Troubleshoot in real-time:** Inspect the events of your Auth0 integration as they happen with the `auth0 logs tail` command.
+- **Simplify repetitive tasks:** Create, update, list and delete your Auth0 resources directly from the terminal.
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Authenticating to Your Tenant](#authenticating-to-your-tenant)
+- [Available Commands](#available-commands)
+- [Customization](#customization)
+- [Agent Integration](#agent-integration)
+- [Anonymous Analytics](#anonymized-analytics-disclosure)
+
+## Installation
+
+### Linux and macOS
+
+Install via [Homebrew](https://brew.sh/):
+
+```bash
+brew tap auth0/auth0-cli && brew install auth0
+```
+
+Install via [cURL](https://curl.se/):
+
+1. Download the binary. It will be placed in `./auth0`:
+   ```bash
+   curl -sSfL https://raw.githubusercontent.com/auth0/auth0-cli/main/install.sh | sh -s -- -b .
+   ```
+2. Optionally, if you want to be able to run the binary from any directory, make sure you move it to a place in your `$PATH`:
+   ```bash
+   sudo mv ./auth0 /usr/local/bin
+   ```
+   > **Tip:** On macOS, depending on the state of your current development environment you may have to first create the directory with `sudo mkdir -p /usr/local/bin`. Alternatively, you can move it to a directory of your choice and add that directory to your `$PATH`.
+
+### Windows
+
+Install via [Scoop](https://scoop.sh/):
+
+```bash
+scoop bucket add auth0 https://github.com/auth0/scoop-auth0-cli.git
+scoop install auth0
+```
+
+Install via [PowerShell](https://learn.microsoft.com/en-us/powershell/):
+
+1. Fetch latest release information with the following commands:
+   ```powershell
+   $latestRelease = Invoke-RestMethod -Uri "https://api.github.com/repos/auth0/auth0-cli/releases/latest"
+   $latestVersion = $latestRelease.tag_name
+   $version = $latestVersion -replace "^v"
+   ```
+2. Download the binary to the current folder:
+   ```powershell
+   Invoke-WebRequest -Uri "https://github.com/auth0/auth0-cli/releases/download/${latestVersion}/auth0-cli_${version}_Windows_x86_64.zip" -OutFile ".\auth0.zip"
+   Expand-Archive ".\auth0.zip" .\
+   ```
+3. To be able to run the binary from any directory, add it to your `$PATH`:
+   ```powershell
+   [System.Environment]::SetEnvironmentVariable('PATH', $Env:PATH + ";${pwd}")
+   ```
+
+### Go
+
+Install via [Go](https://go.dev/):
+
+```bash
+# Make sure your $GOPATH/bin is exported on your $PATH
+# to be able to run the binary from any directory.
+go install github.com/auth0/auth0-cli/cmd/auth0@latest
+```
+
+### Manual
+
+1. Download the appropriate binary for your environment from the [latest release](https://github.com/auth0/auth0-cli/releases/latest/)
+2. Extract the archive
+   - **macOS**: `tar -xf auth0-cli_{version}_Darwin_{architecture}.tar.gz`
+   - **Linux**: `tar -xf auth0-cli_{version}_Linux_{architecture}.tar.gz`
+   - **Windows**: Extract `auth0-cli_{version}_Windows_{architecture}.zip` using your preferred method.
+3. Make sure that the `PATH` and `HOME` environment variables include the folder where the binary was extracted.
+
+> **Tip:** Autocompletion instructions for supported platforms are available by running `auth0 completion -h`.
+
+## Authenticating to Your Tenant
+
+Authenticating to your Auth0 tenant is required for most functions of the CLI. It can be initiated by running:
+
+```bash
+auth0 login
+```
+
+There are two ways to authenticate:
+
+- **As a user** — Recommended when invoking on a personal machine or other interactive environment. Facilitated by [device authorization](https://auth0.com/docs/get-started/authentication-and-authorization-flow/device-authorization-flow) flow and **cannot** be used for private cloud tenants.
+- **As a machine** — Recommended when running on a server or non-interactive environments (e.g. CI, authenticating to a **private cloud**). Facilitated by [client credentials](https://auth0.com/docs/get-started/authentication-and-authorization-flow/client-credentials-flow) flow. Flags available for bypassing interactive shell.
+
+> **Warning:** Authenticating as a user is not supported for **private cloud** tenants. Those users should authenticate with client credentials. Refer to the commands below:
+
+```bash
+auth0 login --domain <domain> --client-id <client-id> --client-secret <client-secret>
+auth0 login --domain <domain> --client-id <client-id> --client-assertion-private-key <path-to-private-key/private-key> --client-assertion-signing-alg <signing-algorithm>
+```
+
+### Re-authentication
+
+When your access token expires, the CLI will prompt you to confirm whether to continue with your default tenant or select a different one:
+
+```
+Continue login with default tenant 'your-tenant.auth0.com'? [y/N]
+```
+
+Select **y** to proceed with your default tenant, or **N** to choose a different tenant.
+
+> **Note:** Using the CLI will consume Management API rate limits according to the subscription plan. Reference: [Rate Limit Policy](https://auth0.com/docs/troubleshoot/customer-support/operational-policies/rate-limit-policy).
+
+## Available Commands
+
+- [auth0 actions](https://auth0.github.io/auth0-cli/auth0_actions.html) — Manage resources for actions
+- [auth0 api](https://auth0.github.io/auth0-cli/auth0_api.html) — Makes an authenticated HTTP request to the Auth0 Management API
+- [auth0 apis](https://auth0.github.io/auth0-cli/auth0_apis.html) — Manage resources for APIs
+- [auth0 apps](https://auth0.github.io/auth0-cli/auth0_apps.html) — Manage resources for applications
+- [auth0 completion](https://auth0.github.io/auth0-cli/auth0_completion.html) — Setup autocomplete features for this CLI on your terminal
+- [auth0 domains](https://auth0.github.io/auth0-cli/auth0_domains.html) — Manage custom domains
+- [auth0 email](https://auth0.github.io/auth0-cli/auth0_email.html) — Manage email settings
+- [auth0 login](https://auth0.github.io/auth0-cli/auth0_login.html) — Authenticate the Auth0 CLI
+- [auth0 logout](https://auth0.github.io/auth0-cli/auth0_logout.html) — Log out of a tenant's session
+- [auth0 logs](https://auth0.github.io/auth0-cli/auth0_logs.html) — View tenant logs
+- [auth0 orgs](https://auth0.github.io/auth0-cli/auth0_orgs.html) — Manage resources for organizations
+- [auth0 protection](https://auth0.github.io/auth0-cli/auth0_protection.html) — Manage resources for attack protection
+- [auth0 quickstarts](https://auth0.github.io/auth0-cli/auth0_quickstarts.html) — Quickstart support for getting bootstrapped
+- [auth0 roles](https://auth0.github.io/auth0-cli/auth0_roles.html) — Manage resources for roles
+- [auth0 rules](https://auth0.github.io/auth0-cli/auth0_rules.html) — Manage resources for rules
+- [auth0 tenants](https://auth0.github.io/auth0-cli/auth0_tenants.html) — Manage configured tenants
+- [auth0 test](https://auth0.github.io/auth0-cli/auth0_test.html) — Try your Universal Login box or get a token
+- [auth0 terraform generate](https://auth0.github.io/auth0-cli/auth0_terraform_generate.html) — Generate terraform configuration for your Auth0 Tenant
+- [auth0 universal-login](https://auth0.github.io/auth0-cli/auth0_universal-login.html) — Manage the Universal Login experience
+- [auth0 users](https://auth0.github.io/auth0-cli/auth0_users.html) — Manage resources for users
+
+## Customization
+
+The default text editor is `vim` on Linux/macOS and `notepad` on Windows. To change that for editing templates, rules, and actions, set the environment variable `EDITOR` to your preferred editor. If choosing a non-terminal editor, ensure that the command starts the editor and waits for the files to be closed before returning.
+
+### Examples
+
+#### Linux / macOS
+
+```shell
+# Uses vscode with the --wait flag.
+export EDITOR="code --wait"
+
+# Uses sublime text with the --wait flag.
+export EDITOR="subl --wait"
+
+# Uses nano, a terminal based editor.
+export EDITOR="nano"
+
+# Uses vim, a terminal based editor.
+export EDITOR="vim"
+```
+
+#### Windows
+
+```powershell
+# PowerShell (current session):
+$env:EDITOR = "code --wait"
+$env:EDITOR = 'subl --wait'
+$env:EDITOR = 'notepad'
+$env:EDITOR = '"C:\Path To\executable++.exe" --wait'
+
+# PowerShell (persistent, across sessions):
+[System.Environment]::SetEnvironmentVariable("EDITOR", "code --wait", "User")
+```
+
+```cmd
+REM Command Prompt (current session):
+set EDITOR=code --wait
+set EDITOR=subl --wait
+set EDITOR=notepad
+set EDITOR="C:\Path To\executable++.exe" --wait
+
+REM Command Prompt (persistent, across sessions):
+setx EDITOR "code --wait"
+```
+
+## Agent Integration
+
+The CLI has an [AgentSkills-compatible](https://agentskills.io/) skill for AI agents (Claude Code, OpenClaw, etc.), available from the [Auth0 Agent Skills](https://github.com/auth0/agent-skills) repository.
+
+### Install via Auth0 Agent Skills (Recommended)
+
+The `auth0-cli` skill is part of the [auth0/agent-skills](https://github.com/auth0/agent-skills) collection. Install the full Auth0 skills suite to get it along with other Auth0 skills:
+
+**Claude Code plugin marketplace:**
+
+```
+/plugin marketplace add auth0/agent-skills
+/plugin install auth0@auth0-agent-skills
+```
+
+**Skills CLI:**
+
+```bash
+npx skills add auth0/agent-skills
+```
+
+**Manual installation (Claude Code, OpenClaw):**
+
+```bash
+git clone https://github.com/auth0/agent-skills.git
+
+# Claude Code
+cp -r agent-skills/plugins/auth0/skills/auth0-cli ~/.claude/skills/
+
+# OpenClaw
+cp -r agent-skills/plugins/auth0/skills/auth0-cli ~/.openclaw/skills/
+```
+
+> **Note:** The `auth0` binary must be installed and available on your `$PATH` for agents to use this skill.
+
+## Anonymized Analytics Disclosure
+
+Anonymized data points are collected during the use of this CLI. This data includes the CLI version, operating system, timestamp, and other technical details that do not personally identify you.
+
+Auth0 uses this data to better understand the usage of this tool to prioritize the features, enhancements and fixes that matter most to our users.
+
+To **opt-out** of this collection, set the `AUTH0_CLI_ANALYTICS` environment variable to `false`.
