@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <!--
   Locked HTML report template for the auth0-checkmate skill.
-  Phase 5 substitutes every {{placeholder}} with the same data feeding report-template.md.
+  Phase 5 substitutes every placeholder token with the same data feeding report-template.md.
   Visual design models the "Auth0 Platform Development Review" reference layout (orange brand accent, severity-coded chips, four-section structure).
-  Render to PDF with bin/render_pdf.sh (Chrome headless).
+  Render to PDF with scripts/render_pdf.sh (Chrome headless).
 -->
 <html lang="en">
 <head>
@@ -219,7 +219,7 @@
 <header class="header">
   <div>
     <h1>Auth0 Platform<br>Development Review</h1>
-    {{subtitle_html}}  <!-- '<div class="subtitle">Prepared by {{reviewer_org}}</div>' if reviewer_org is non-empty; emit empty string otherwise -->
+    {{subtitle_html}}  <!-- a subtitle div reading "Prepared by <org>" if reviewer_org is non-empty; emit empty string otherwise -->
   </div>
   <div class="header-right">
     <span class="plan-badge">{{plan_tag}}</span>
@@ -234,7 +234,7 @@
   <tr><th>Customer Account</th><td>{{customer_name}} ({{tenant_domain}})</td></tr>
   <tr><th>Current Auth0 Tier</th><td>{{tier}}</td></tr>
   <tr><th>Use Case Diagnosis</th><td>{{business_model}} — {{product_summary_short}}</td></tr>
-  <tr><th>Auth0 Fit</th><td>{{auth0_plan_recommendation}} · Auth for AI Agents: {{a4aa_yes_no}}</td></tr>
+  <tr><th>Recommended Plan</th><td>{{recommended_plan}} · Auth for AI Agents: {{a4aa_yes_no}}</td></tr>
 </table>
 
 <h2 class="section">1. Account Health</h2>
@@ -258,9 +258,8 @@
   </tbody>
 </table>
 
-<!-- gaps_html: rendered from the included gap callouts. Each block:
-<div class="gap"><div class="gap-name">{{gap_name}}</div><p>{{gap_body}}</p></div>
-Only include gaps the data supports. -->
+<!-- gaps_html: rendered from the included gap callouts. Each block is a gap div with a
+     gap-name heading and a one-line body paragraph. Only include gaps the data supports. -->
 {{gaps_html}}
 
 <h2 class="section">2. Executive Summary</h2>
@@ -288,22 +287,16 @@ Only include gaps the data supports. -->
     <tr><th>Feature Area</th><th>The Enterprise Challenge</th><th>The Solution</th><th>Strategic Impact</th></tr>
   </thead>
   <tbody>
-    <!-- opportunities_rows: one <tr> per included row. Template:
-    <tr>
-      <td class="feature">{{feature_area}}</td>
-      <td class="challenge">{{challenge_personalized}}</td>
-      <td class="solution">{{solution_label}}</td>
-      <td class="impact">{{strategic_impact}}</td>
-    </tr>
-    Every challenge cell MUST name a specific product, segment, or capability from enrichment.
-    -->
+    <!-- opportunities_rows: one table row per included row — feature area, a personalized
+         challenge cell, the solution label, and the strategic impact. Every challenge cell
+         MUST name a specific product, segment, or capability from the company context. -->
     {{opportunities_rows}}
   </tbody>
 </table>
 
 <h2 class="section">4. Recommended Roadmap &amp; Next Steps</h2>
 
-<p class="roadmap-banner">Recommended Plan: <em>{{auth0_plan_recommendation}}{{a4aa_addon_suffix}}</em></p>
+<p class="roadmap-banner">Recommended Plan: <em>{{recommended_plan}}{{a4aa_addon_suffix}}</em></p>
 
 <div class="roadmap">
   {{plan_recommendation_paragraphs_html}}
@@ -311,19 +304,19 @@ Only include gaps the data supports. -->
 
 <p><strong>Immediate Actions — Available Today (Free)</strong></p>
 <ol class="actions">
-  <!-- immediate_actions_html: <li>{{action_text}}</li> per item. Each must name affected apps/connections explicitly. -->
+  <!-- immediate_actions_html: one list item per item. Each must name affected apps/connections explicitly. -->
   {{immediate_actions_html}}
 </ol>
 
 <p><strong>After Upgrading</strong></p>
 <ol class="actions">
-  <!-- after_upgrading_html: <li>{{action_text}}</li> per item. -->
+  <!-- after_upgrading_html: one list item per item. -->
   {{after_upgrading_html}}
 </ol>
 
 <p><strong>Key Documentation</strong></p>
 <div class="docs">
-  <!-- docs_html: <a href="{{url}}">{{label}}</a> per included row. Match Section 3 rows. -->
+  <!-- docs_html: one anchor link per included row. Match Section 3 rows. -->
   {{docs_html}}
 </div>
 

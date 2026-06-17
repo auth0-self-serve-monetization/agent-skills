@@ -1,22 +1,23 @@
 # Locked report skeleton (Auth0 Platform Development Review)
 
-This is the structural contract Phase 5 of the `auth0-checkmate` skill follows for the markdown brief. The HTML/PDF render uses the parallel template at [report-template.html](report-template.html) — same data, same sections, different presentation. Replace every `{{placeholder}}` with values from CheckMate JSON / enrichment JSON / tenant facts. Visual design models the "Auth0 Platform Development Review" reference layout (orange brand accent, severity-coded chips, four-section structure).
+This is the structural contract Phase 5 of the `auth0-checkmate` skill follows for the markdown brief. The HTML/PDF render uses the parallel template at [report-template.html](report-template.html) — same data, same sections, different presentation. Replace every placeholder token with values from the CheckMate report, the lightweight company context (Phase 3), and tenant facts. Visual design models the "Auth0 Platform Development Review" reference layout (orange brand accent, severity-coded chips, four-section structure).
 
-Source-of-truth reminders (see SKILL.md Phase 5):
-- `{{tenant_domain}}` → `state/setup.json.tenant_domain` (from `auth0 tenants list --json`)
-- `{{customer_name}}`, `{{product_*}}`, `{{business_model}}`, `{{ai_use_case}}`, `{{auth0_plan_recommendation}}`, `{{a4aa_fit_score}}`, `{{integrations_*}}` → enrichment JSON
-- `{{reviewer_name}}`, `{{reviewer_org}}` → `state/operator.json.reviewer_name` / `.reviewer_org`
-- `{{plan_tag}}`, `{{tier}}` → `auth0 api get tenants/settings` (fallback "Free Plan")
-- `{{apps_count}}`, `{{apps_*}}` → `auth0 apps list --json`
-- `{{login_activity}}` → derived from `auth0 logs list --number 50`
-- `{{custom_domains_present}}`, `{{log_streams_present}}`, `{{mfa_configured}}`, etc. → tenant facts from Phase 4.4
-- `{{findings_*_count}}`, `{{findings_*_examples}}` → CheckMate `data.report.summary[]` grouped by severity
+Source-of-truth reminders (see SKILL.md Phase 5) — placeholder → source:
+- tenant_domain → `state/setup.json.tenant_domain` (from `auth0 tenants list --json`); never from the company context
+- customer_name, product_*, business_model, ai_use_case, integrations_* → the company context (Phase 3; sanitized — no fit scores, no firmographics)
+- recommended_plan, a4aa_yes_no → DERIVED in Phase 4 from the use case + the findings + `auth0-pricing.md` (never a company score)
+- reviewer_name, reviewer_org → `state/operator.json.reviewer_name` / `.reviewer_org`
+- plan_tag, tier → `auth0 api get tenants/settings` (fallback "Free Plan")
+- apps_count, apps_* → `auth0 apps list --json`
+- login_activity → derived from `auth0 logs list --number 50`
+- custom_domains_present, log_streams_present, mfa_configured, etc. → tenant facts from Phase 4.4
+- findings_*_count, findings_*_examples → the CheckMate report (a flat array of finding objects), grouped by severity
 
 ---
 
 # Auth0 Platform Development Review
 
-{{prepared_by_line}}  <!-- "**Prepared by {{reviewer_org}}**" if reviewer_org is non-empty; OMIT this line entirely otherwise -->
+{{prepared_by_line}}  <!-- the "Prepared by <org>" line if reviewer_org is non-empty; OMIT this line entirely otherwise -->
 
 > **{{plan_tag}}** · {{customer_name}} · {{tenant_domain}} · {{review_date_long}}
 
@@ -27,7 +28,7 @@ Source-of-truth reminders (see SKILL.md Phase 5):
 | **Customer Account** | {{customer_name}} ({{tenant_domain}}) |
 | **Current Auth0 Tier** | {{tier}} |
 | **Use Case Diagnosis** | {{business_model}} — {{product_summary_short}} |
-| **Auth0 Fit** | {{auth0_plan_recommendation}} · Auth for AI Agents: {{a4aa_yes_no}} |
+| **Recommended Plan** | {{recommended_plan}} · Auth for AI Agents: {{a4aa_yes_no}} |
 
 ---
 
@@ -99,7 +100,7 @@ Include only the rows whose triggers are met. Rewrite the cell text to reference
 
 ## 4. RECOMMENDED ROADMAP & NEXT STEPS
 
-### Recommended Plan: **{{auth0_plan_recommendation}}**{{a4aa_addon_suffix}}
+### Recommended Plan: **{{recommended_plan}}**{{a4aa_addon_suffix}}
 
 {{plan_recommendation_paragraph}}
 
