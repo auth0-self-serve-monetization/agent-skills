@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <!--
   Locked HTML report template for the auth0-healthcheck-all-plans skill.
-  Phase 5 substitutes every {{placeholder}} with the same data feeding report-template.md.
+  Phase 5 substitutes every placeholder token with the same data feeding report-template.md.
   Two-section layout: PART A Security & Config Hygiene (universal) + PART B Capability Fit (tier-aware).
-  CSS adapted from the auth0-checkmate report template. Render to PDF with bin/render_pdf.sh.
+  CSS adapted from the auth0-checkmate report template. Render to PDF with scripts/render_pdf.sh.
 -->
 <html lang="en">
 <head>
@@ -95,7 +95,7 @@
 <header class="header">
   <div>
     <h1>Auth0 Tenant<br>Health Check</h1>
-    {{subtitle_html}}  <!-- '<div class="subtitle">Prepared by {{reviewer_org}}</div>' if reviewer_org non-empty; else empty string -->
+    {{subtitle_html}}  <!-- a subtitle div reading "Prepared by <org>" if reviewer_org is non-empty; else empty string -->
   </div>
   <div class="header-right">
     <span class="plan-badge">{{plan_tag}}</span>
@@ -149,7 +149,7 @@
   </tbody>
 </table>
 
-<!-- gaps_html: <div class="gap"><div class="gap-name">{{gap_name}}</div><p>{{gap_body}}</p></div> per supported gap. Each names a real product/app/segment. -->
+<!-- gaps_html: one gap block per supported gap — a gap-name div followed by a one-line body paragraph. Each names a real product/app/segment. -->
 {{gaps_html}}
 
 <h3 class="section">Configuration Posture at a Glance</h3>
@@ -165,7 +165,7 @@
 
 <h3 class="section">Immediate Actions — Available Today on {{current_plan}}</h3>
 <ol class="actions">
-  <!-- immediate_actions_html: <li>{{action_text}}</li> each naming affected apps/connections explicitly. -->
+  <!-- immediate_actions_html: one list item per action, each naming affected apps/connections explicitly. -->
   {{immediate_actions_html}}
 </ol>
 
@@ -176,13 +176,9 @@
 <table class="data">
   <thead><tr><th>Feature</th><th>Status</th><th>Plan Home</th><th>Why it matters</th></tr></thead>
   <tbody>
-    <!-- gap_matrix_rows: per feature.
-    <tr>
-      <td class="label">{{feature_name}}</td>
-      <td><span class="status-ok|status-miss|status-partial">{{status}}</span></td>
-      <td><span class="planhome now|planhome|planhome ent">{{plan_home}}</span></td>   <!-- "Available now" / "Unlocks on {{plan}}" / "Enterprise-only" -->
-      <td>{{why_personalized}}</td>   <!-- names a real product/segment -->
-    </tr> -->
+    <!-- gap_matrix_rows: one table row per feature — feature name, a status span (ok / miss / partial),
+         a Plan Home span (Available now / Unlocks on a plan / Enterprise-only), and a personalized
+         "why it matters" cell that names a real product/segment. -->
     {{gap_matrix_rows}}
   </tbody>
 </table>
@@ -197,35 +193,25 @@
 </table>
 
 <h3 class="section">Plan Guidance</h3>
-<!-- Render exactly ONE of the three variants into {{plan_guidance_block}}:
+<!-- Render exactly ONE of the three variants in place of the plan_guidance_block placeholder below:
 
-  SELF-SERVICE:
-  <div class="plan-block">
-    <p class="plan-banner">Recommended Plan: <em>{{recommended_plan}}</em> — {{exact_cost}}{{a4aa_addon_suffix}}</p>
-    <p>{{plan_rationale_personalized}}</p>
-    <p><strong>After Upgrading</strong></p>
-    <ol class="actions">{{after_upgrading_html}}</ol>
-  </div>
+  SELF-SERVICE: a .plan-block with a "Recommended Plan: <plan> — <exact cost>" banner (append the
+  A4AA add-on suffix only when gated), a personalized rationale paragraph, an "After Upgrading"
+  heading, and an actions list.
 
-  ENTERPRISE (no price; include Talk-to-Sales):
-  <div class="plan-block enterprise">
-    <p class="plan-banner"><em>Enterprise — contact sales</em></p>
-    <p>{{enterprise_rationale}} Triggered by: {{enterprise_triggers_list}}.</p>
-    <div class="sales-brief">{{talk_to_sales_brief}}</div>
-    <p><a href="https://auth0.com/contact-us">Contact Auth0 sales</a>{{custom_ae_link_html}}</p>
-  </div>
+  ENTERPRISE (no price; include Talk-to-Sales): a .plan-block.enterprise with an
+  "Enterprise — contact sales" banner, the enterprise rationale plus a "Triggered by: <triggers>"
+  note, the Talk-to-Sales brief, and a "Contact Auth0 sales" link to https://auth0.com/contact-us
+  (plus the custom AE link if one is set).
 
-  ALREADY-ENTERPRISE (optimize/govern; no upsell):
-  <div class="plan-block">
-    <p class="plan-banner">You're on <em>Enterprise</em> — optimize what you already own</p>
-    <ol class="actions">{{optimization_actions_html}}</ol>
-  </div>
+  ALREADY-ENTERPRISE (optimize/govern; no upsell): a .plan-block with a
+  "You're on Enterprise — optimize what you already own" banner and an optimization actions list.
 -->
 {{plan_guidance_block}}
 
 <h3 class="section">Key Documentation</h3>
 <div class="docs">
-  <!-- docs_html: <a href="{{url}}">{{label}}</a> per row, matched to the opportunities above. -->
+  <!-- docs_html: one anchor link per row, matched to the opportunities above. -->
   {{docs_html}}
 </div>
 

@@ -89,15 +89,16 @@ IF use_case == "B2B" BUT Organizations NOT detected AND business_model indicates
    REASON: Organizations is critical for B2B
    SEVERITY: CRITICAL gap
 
-IF use_case == "AI-Native" OR "AI-Differentiated" AND integrations.length > 0:
+IF (use_case == "AI-Native" OR use_case == "AI-Differentiated") AND integrations.length > 0:
    THEN: Surface A4AA add-on as CRITICAL
    REASON: Token Vault non-negotiable for OAuth integrations
    CONFIDENCE: High (0.85+)
 
-IF ai_use_case == true AND autonomous_actions detected AND current_plan < "Professional":
+IF ai_use_case == true AND autonomous_actions detected AND current_plan in {Free, Essentials}:
    THEN: Recommend Professional (not Essentials)
    REASON: CIBA requires Professional base
    OVERRIDE: Do not recommend Essentials + A4AA if autonomous actions detected
+   NOTE: compare plans by explicit tier rank (Free < Essentials < Professional < Enterprise), never by lexical string comparison
 
 ### Feature Gap Cross-Reference
 

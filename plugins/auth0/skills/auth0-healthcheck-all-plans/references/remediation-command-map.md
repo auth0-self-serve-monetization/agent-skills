@@ -1,6 +1,6 @@
 # Remediation Command Map (gated apply)
 
-Used by **Phase 7 — Optional gated apply**. For each approved fix, build the command using a first-class subcommand when one exists; otherwise fall back to `auth0 api patch <path>` with an explicit JSON payload. Run `auth0 <cmd> --help` first if unsure of flag names.
+Used by **Phase 7 — Optional gated apply**. For each approved fix, build the command using a first-class subcommand when one exists; otherwise fall back to `auth0 api <method> <path>` with an explicit JSON payload, where `<method>` is the HTTP method shown for that resource in the mapping table below (PATCH / PUT / POST — not always PATCH). Run `auth0 <cmd> --help` first if unsure of flag names.
 
 ## Per-item flow (mandatory for every item)
 
@@ -35,7 +35,7 @@ Used by **Phase 7 — Optional gated apply**. For each approved fix, build the c
 | Network ACLs | (none) | `POST/PATCH /api/v2/network-acls` |
 | Auth0 Organizations | `auth0 orgs create/update` | `POST/PATCH /api/v2/organizations` |
 
-The universal fallback is `auth0 api patch <path> --data '<json>'`.
+The fallback is `auth0 api <method> <path> --data '<json>'`, where `<method>` matches the table above: `patch` for most resources, `put` for MFA factor toggles, MFA policies, and Prompts customization, and `post` when creating a resource (custom domains, log streams, network ACLs, organizations). Note that `auth0 api` defaults to GET without `--data` and POST with `--data`, so always state the method explicitly.
 
 ## MFA safety rule (do not lock users out)
 

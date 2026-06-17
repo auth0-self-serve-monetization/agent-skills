@@ -90,7 +90,7 @@ IF ai_use_case == true
    • Token Vault (securely store + refresh OAuth tokens for agent integrations)
      - List specific APIs: "e.g., Gmail, Slack, Salesforce"
    
-   • CIBA (Confirmation by External Analyzer — async approval for high-stakes actions)
+   • CIBA (Client Initiated Backchannel Authentication — async approval for high-stakes actions)
      - IF autonomous_actions CONTAINS (sending emails, updating records, publishing, financial transactions)
      - THEN: CIBA is critical
    

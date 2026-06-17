@@ -35,13 +35,17 @@ brew tap auth0/auth0-cli && brew install auth0
 Install via [cURL](https://curl.se/):
 
 1. Download the binary. It will be placed in `./auth0`:
+
    ```bash
    curl -sSfL https://raw.githubusercontent.com/auth0/auth0-cli/main/install.sh | sh -s -- -b .
    ```
+
 2. Optionally, if you want to be able to run the binary from any directory, make sure you move it to a place in your `$PATH`:
+
    ```bash
    sudo mv ./auth0 /usr/local/bin
    ```
+
    > **Tip:** On macOS, depending on the state of your current development environment you may have to first create the directory with `sudo mkdir -p /usr/local/bin`. Alternatively, you can move it to a directory of your choice and add that directory to your `$PATH`.
 
 ### Windows
@@ -56,17 +60,22 @@ scoop install auth0
 Install via [PowerShell](https://learn.microsoft.com/en-us/powershell/):
 
 1. Fetch latest release information with the following commands:
+
    ```powershell
    $latestRelease = Invoke-RestMethod -Uri "https://api.github.com/repos/auth0/auth0-cli/releases/latest"
    $latestVersion = $latestRelease.tag_name
    $version = $latestVersion -replace "^v"
    ```
+
 2. Download the binary to the current folder:
+
    ```powershell
    Invoke-WebRequest -Uri "https://github.com/auth0/auth0-cli/releases/download/${latestVersion}/auth0-cli_${version}_Windows_x86_64.zip" -OutFile ".\auth0.zip"
    Expand-Archive ".\auth0.zip" .\
    ```
+
 3. To be able to run the binary from any directory, add it to your `$PATH`:
+
    ```powershell
    [System.Environment]::SetEnvironmentVariable('PATH', $Env:PATH + ";${pwd}")
    ```
@@ -116,7 +125,7 @@ auth0 login --domain <domain> --client-id <client-id> --client-assertion-private
 
 When your access token expires, the CLI will prompt you to confirm whether to continue with your default tenant or select a different one:
 
-```
+```text
 Continue login with default tenant 'your-tenant.auth0.com'? [y/N]
 ```
 
@@ -203,7 +212,7 @@ The `auth0-cli` skill is part of the [auth0/agent-skills](https://github.com/aut
 
 **Claude Code plugin marketplace:**
 
-```
+```text
 /plugin marketplace add auth0/agent-skills
 /plugin install auth0@auth0-agent-skills
 ```

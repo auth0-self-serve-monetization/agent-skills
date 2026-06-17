@@ -82,23 +82,29 @@ done
 
 if [[ -n "$CHROME" ]]; then
   echo "render_pdf: using $CHROME" >&2
+  # Render to a temp file and only promote it on success — a stale PDF already
+  # sitting at OUTPUT_ABS must never be mistaken for a fresh, successful render.
+  TMP_PDF="$(mktemp -t render_pdf.XXXXXX 2>/dev/null || echo "${OUTPUT_ABS}.tmp.$$")"
   "$CHROME" \
     --headless=new \
     --disable-gpu \
     --no-pdf-header-footer \
-    --print-to-pdf="$OUTPUT_ABS" \
+    --print-to-pdf="$TMP_PDF" \
     "file://$INPUT_ABS" \
     >/dev/null 2>&1 \
     || "$CHROME" \
       --headless \
       --disable-gpu \
-      --print-to-pdf="$OUTPUT_ABS" \
+      --print-to-pdf="$TMP_PDF" \
       "file://$INPUT_ABS" \
       >/dev/null 2>&1 || true
-  if [[ -f "$OUTPUT_ABS" ]]; then
+  if [[ -s "$TMP_PDF" ]]; then
+    mv -f "$TMP_PDF" "$OUTPUT_ABS"
     echo "render_pdf: wrote $OUTPUT_ABS" >&2
     exit 0
   fi
+  rm -f "$TMP_PDF"
+  echo "render_pdf: Chrome produced no output; trying other renderers" >&2
 fi
 
 if command -v wkhtmltopdf >/dev/null 2>&1; then

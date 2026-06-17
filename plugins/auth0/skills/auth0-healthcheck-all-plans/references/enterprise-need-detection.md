@@ -25,7 +25,6 @@ IF the user explicitly asks for an Enterprise-only feature,
      custom rate limits,
      99.99% SLA,
      Home Realm Discovery (B2C),
-     M2M Access for Organizations (B2C),
      MAU beyond the published self-service ceiling for the tenant's track
    }
 THEN enterprise_need = TRUE

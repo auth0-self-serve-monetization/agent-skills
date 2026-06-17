@@ -6,7 +6,7 @@
 ## Free → B2C Essentials
 
 FEATURES THAT UNLOCK:
-✓ Custom Domain (1 included)
+= Custom Domain (already included on Free — not a new unlock)
 ✓ Pro MFA Factors (WebAuthn, Authenticator App)
 ✓ Email Workflow & Branding
 ✓ Customize Signup & Login
@@ -25,11 +25,11 @@ FEATURES THAT REMAIN THE SAME:
 ## Free → B2C Professional
 
 FEATURES THAT UNLOCK:
-✓ Custom Domain (1 included)
+= Custom Domain (already included on Free — not a new unlock)
 ✓ Pro MFA Factors (WebAuthn, Authenticator App)
 ✓ Email Workflow & Branding
 ✓ Customize Signup & Login
-✓ Log Streaming (1 stream included)
+✓ Log Streaming (2 streams included)
 ✓ Social Connections (unlimited)
 ✓ 10 Organizations
 ✓ Email Provider (configurable)
@@ -44,7 +44,7 @@ FEATURES THAT UNLOCK:
 ## Free → B2B Essentials
 
 FEATURES THAT UNLOCK:
-✓ Custom Domain (1 included)
+= Custom Domain (already included on Free — not a new unlock)
 ✓ Auth0 Organizations (unlimited)
 ✓ Enterprise Connections (SAML/OIDC) — 3 included
 ✓ Pro MFA Factors (WebAuthn, Authenticator App)
@@ -64,13 +64,13 @@ FEATURES THAT REMAIN THE SAME:
 ## Free → B2B Professional
 
 FEATURES THAT UNLOCK:
-✓ Custom Domain (1 included)
+= Custom Domain (already included on Free — not a new unlock)
 ✓ Auth0 Organizations (unlimited)
 ✓ Enterprise Connections (SAML/OIDC) — 5 included
 ✓ Pro MFA Factors (WebAuthn, Authenticator App)
 ✓ Enterprise MFA Factors (included, not add-on)
 ✓ RBAC (Roles & Permissions)
-✓ Log Streaming (1 stream included)
+✓ Log Streaming (2 streams included)
 ✓ Email Workflow & Branding
 ✓ Email Provider (configurable)
 ✓ Per-Organization Branding
@@ -129,7 +129,6 @@ FEATURES THAT REMAIN THE SAME:
 FEATURES THAT UNLOCK:
 ✓ 99.99% SLA
 ✓ Priority Support
-✓ Unlimited Custom Domains
 ✓ Custom rate limits & token adjustments
 ✓ Continuous Session Protection
 ✓ Prioritized Security Log Streams
@@ -258,7 +257,7 @@ Adaptive MFA
 
 | Feature | Free | B2C Essentials | B2C Professional | B2B Essentials | B2B Professional | Enterprise |
 |---------|------|---|---|---|---|---|
-| Custom Domains | 1 | Included | Included | Included | Included | Unlimited |
+| Custom Domains | 1 | Included | Included | Included | Included | Included |
 | Email Workflow | No | Yes | Yes | Yes | Yes | Yes |
 | Customize Signup & Login | No | Yes | Yes | Yes | Yes | Yes |
 | Per-Organization Branding | No | No | No | Yes | Yes | Yes |
@@ -272,7 +271,7 @@ Adaptive MFA
 | Enhanced Password Protection | No | No | Yes | No | Yes | Yes |
 | Breached Password Detection | No | No | Yes | No | Yes | Yes |
 | Security Center | No | No | Yes | No | Yes | Yes |
-| Log Streaming | No | 1 stream | 1 stream | 1 stream | 1 stream | Prioritized |
+| Log Streaming | No | 1 stream | 2 streams | 1 stream | 2 streams | 2 streams (Prioritized) |
 
 ### Organizations & Access Control
 
@@ -286,7 +285,7 @@ Adaptive MFA
 
 | Feature | Free | B2C Essentials | B2C Professional | B2B Essentials | B2B Professional | Enterprise |
 |---------|------|---|---|---|---|---|
-| M2M Tokens | No | No | 5,000 included | No | 5,000 included | Custom |
+| M2M Tokens | No | Add-on | 5,000 included | Add-on | 5,000 included | Custom |
 | M2M Access for Organizations | No | No | No | No | Yes | Yes |
 | Custom Database Connections | No | No | Yes | No | Yes | Yes |
 

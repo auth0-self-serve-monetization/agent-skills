@@ -33,11 +33,11 @@ Input:
 - Monthly growth rate: 15% (0.15)
 
 Forecast:
-Month 1: 500
-Month 6: ~1,005
-Month 12: ~2,456
-Month 24: ~12,000
-Month 28: ~25,000 ← reaches the Free tier limit (25k)
+Month 1: ~575
+Month 6: ~1,157
+Month 12: ~2,675
+Month 24: ~14,313
+Month 28: ~25,033 ← reaches the Free tier limit (25k)
 
 Result:
 - Months until Free tier limit (25k): ~28 months (~2.3 years)
@@ -57,7 +57,14 @@ Forecast Timeline:
 
 ## Interactive Fallback Logic
 
-If current MAU is NOT available from tenant telemetry:
+A forecast needs BOTH a starting point (current MAU) and a growth rate. Collect **current MAU first** — a growth rate alone cannot produce a forecast.
+
+STEP 1 — current MAU (required, get this first):
+- Prefer tenant telemetry: `auth0 api get stats/active-users`.
+- If unavailable, PROMPT USER: "What's your current monthly active user count?"
+- If the user genuinely can't answer, fall back to the Edge Case 2 default (100 MAU) and label the forecast an estimate.
+
+STEP 2 — monthly growth rate (only after current MAU is known):
 
 PROMPT USER:
 "What's your estimated monthly growth rate?
@@ -74,6 +81,8 @@ IF user provides growth_rate:
 ELSE IF user skips or says "I don't know":
    THEN: DEFAULT to 15% as conservative SaaS estimate
    OUTPUT NOTE: "Forecast assumes 15% monthly growth (typical for SaaS). Adjust based on your actual growth."
+
+Only once BOTH current MAU and growth rate are established does the forecast run.
 
 ---
 
@@ -162,9 +171,9 @@ IF current_plan == "Enterprise":
   "recommended_action": "No MAU-driven urgency; recommend a plan based on use-case feature gaps, not capacity",
   "timeline": {
     "month_1_mau": 575,
-    "month_6_mau": 1005,
-    "month_12_mau": 2456,
-    "month_24_mau": 12029,
-    "month_28_mau": 25000
+    "month_6_mau": 1157,
+    "month_12_mau": 2675,
+    "month_24_mau": 14313,
+    "month_28_mau": 25033
   }
 }

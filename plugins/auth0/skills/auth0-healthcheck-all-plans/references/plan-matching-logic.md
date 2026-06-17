@@ -15,6 +15,8 @@ Never quote or estimate a price for Enterprise (`data-integrity-rules.md` "Conta
 
 ## Plan Decision Tree
 
+> **MAU thresholds below are relative to `track_ceiling`** — the tenant's published MAU limit for its own track + plan, read from [pricing.md](pricing.md) (Free 25k; B2C Essentials 50k / Professional 30k; B2B Essentials 20k / Professional ~20k). "Approaching" means `current_mau ≥ 80% of track_ceiling`. Never compare against a flat 40k/50k number.
+
 ### Current Plan: FREE
 
 IF use_case == "B2B" OR business_model == "B2B"
@@ -31,14 +33,14 @@ ELSE IF use_case == "B2C" OR business_model == "B2C"
    REASON: Consumer apps need Custom Domain, social auth, MFA
    FEATURES UNLOCK: Custom Domain, Pro MFA, Email Provider, Branding, Social Connections (unlimited)
    
-ELSE IF ai_use_case == true AND integrations.length > 0
+ELSE IF ai_use_case == true AND integrations.length > 0 AND a4aa_fit_score ≥ 0.4
    AND autonomous_actions DETECTED (sending emails, financial transactions, modifying records)
    
    THEN: Recommend B2B Professional + A4AA add-on
    REASON: Token Vault + CIBA require Professional base or higher + A4AA add-on
    FEATURES UNLOCK: Token Vault, CIBA, M2M Access for Organizations, Enhanced MFA
    
-ELSE IF ai_use_case == true AND integrations.length > 0
+ELSE IF ai_use_case == true AND integrations.length > 0 AND a4aa_fit_score ≥ 0.4
    AND autonomous_actions NOT detected (read-only or passive agents)
    
    THEN: Recommend B2B Essentials + A4AA add-on
@@ -61,16 +63,16 @@ ELSE IF no clear signals OR mixed use case
 
 ### Current Plan: B2C ESSENTIALS
 
-IF readiness_score > 80% AND current_mau < 40k AND no_critical_gaps
+IF readiness_score > 80% AND current_mau < 80% of track_ceiling AND no_critical_gaps
    
    THEN: Recommend STAY on B2C Essentials
    STATUS: "Well-fitted for current use case"
    ACTION: No upgrade needed; monitor MAU growth
    
-ELSE IF current_mau > 40k OR (monthly_growth > 20% AND months_until_essentials_limit < 6)
+ELSE IF current_mau ≥ 80% of track_ceiling OR (monthly_growth > 20% AND months_until_essentials_limit < 6)
    
    THEN: Recommend upgrade to B2C Professional
-   REASON: Approaching Essentials MAU limit (50k); need higher tier
+   REASON: Approaching the Essentials MAU ceiling for this track (per pricing.md); need higher tier
    FEATURES UNLOCK: Enhanced Password Protection, Breached Password Detection, Security Center, Custom Database Connections
    
 ELSE IF critical_gaps CONTAINS "Custom DB Connections" OR "Enhanced Password Protection" OR "5k+ M2M tokens/month"
@@ -83,16 +85,16 @@ ELSE IF critical_gaps CONTAINS "Custom DB Connections" OR "Enhanced Password Pro
 
 ### Current Plan: B2C PROFESSIONAL
 
-IF readiness_score > 90% AND current_mau < 40k
+IF readiness_score > 90% AND current_mau < 80% of track_ceiling
    
    THEN: Recommend STAY on B2C Professional
    STATUS: "Optimal configuration for use case"
    ACTION: Monitor for additional needs; no upgrade required
    
-ELSE IF current_mau > 40k OR (monthly_growth > 20% AND months_until_professional_limit < 3)
+ELSE IF current_mau ≥ 80% of track_ceiling OR (monthly_growth > 20% AND months_until_professional_limit < 3)
    
    THEN: Recommend contact Enterprise sales
-   REASON: Approaching Professional MAU ceiling (50k); custom contract needed
+   REASON: Approaching the Professional MAU ceiling for this track (per pricing.md); custom contract needed
    STATUS: "You've outgrown standard plans"
    ACTION: "Contact Auth0 sales for Enterprise plan options"
 
@@ -100,16 +102,16 @@ ELSE IF current_mau > 40k OR (monthly_growth > 20% AND months_until_professional
 
 ### Current Plan: B2B ESSENTIALS
 
-IF readiness_score > 80% AND current_mau < 40k AND no_critical_gaps
+IF readiness_score > 80% AND current_mau < 80% of track_ceiling AND no_critical_gaps
    
    THEN: Recommend STAY on B2B Essentials
    STATUS: "Well-fitted for current use case"
    ACTION: No upgrade needed; monitor MAU growth
    
-ELSE IF current_mau > 40k OR (monthly_growth > 20% AND months_until_essentials_limit < 6)
+ELSE IF current_mau ≥ 80% of track_ceiling OR (monthly_growth > 20% AND months_until_essentials_limit < 6)
    
    THEN: Recommend upgrade to B2B Professional
-   REASON: Approaching Essentials MAU limit (50k); need higher tier
+   REASON: Approaching the Essentials MAU ceiling for this track (per pricing.md); need higher tier
    FEATURES UNLOCK: 5 Enterprise Connections (vs 3), Enhanced Password Protection, Breached Password Detection, Security Center, Custom Database Connections
    
 ELSE IF critical_gaps CONTAINS "Custom DB Connections" OR "4+ Enterprise Connections" OR "M2M Access for Organizations" OR "5k+ M2M tokens/month"
@@ -118,7 +120,7 @@ ELSE IF critical_gaps CONTAINS "Custom DB Connections" OR "4+ Enterprise Connect
    REASON: These features require Professional plan
    FEATURES UNLOCK: 5 Enterprise Connections, M2M Access for Organizations, Enhanced Password Protection, Breached Password Detection, Security Center, Custom Database Connections
    
-ELSE IF ai_use_case == true AND integrations.length > 0
+ELSE IF ai_use_case == true AND integrations.length > 0 AND a4aa_fit_score ≥ 0.4
    
    THEN: Recommend B2B Essentials + A4AA add-on
    REASON: Token Vault sufficient for AI workflows on Essentials base
@@ -132,20 +134,20 @@ ELSE IF ai_use_case == true AND integrations.length > 0
 
 ### Current Plan: B2B PROFESSIONAL
 
-IF readiness_score > 90% AND current_mau < 40k
+IF readiness_score > 90% AND current_mau < 80% of track_ceiling
    
    THEN: Recommend STAY on B2B Professional
    STATUS: "Optimal configuration for use case"
    ACTION: Monitor for additional needs; no upgrade required
    
-ELSE IF current_mau > 40k OR (monthly_growth > 20% AND months_until_professional_limit < 3)
+ELSE IF current_mau ≥ 80% of track_ceiling OR (monthly_growth > 20% AND months_until_professional_limit < 3)
    
    THEN: Recommend contact Enterprise sales
-   REASON: Approaching Professional MAU ceiling (50k); custom contract needed
+   REASON: Approaching the Professional MAU ceiling for this track (per pricing.md); custom contract needed
    STATUS: "You've outgrown standard plans"
    ACTION: "Contact Auth0 sales for Enterprise plan options"
    
-ELSE IF ai_use_case == true AND integrations.length > 0 AND a4aa_fit_score > 0.4
+ELSE IF ai_use_case == true AND integrations.length > 0 AND a4aa_fit_score ≥ 0.4
    
    THEN: Recommend B2B Professional + A4AA add-on
    REASON: Unlock Token Vault, CIBA, M2M token pool for AI agents
@@ -163,7 +165,7 @@ IF readiness_score > 90% AND custom_sla_active
    STATUS: "Optimized for scale and compliance"
    ACTION: Continue with Auth0 support team; no action needed
    
-ELSE IF ai_use_case == true AND integrations.length > 0 AND a4aa_fit_score > 0.4
+ELSE IF ai_use_case == true AND integrations.length > 0 AND a4aa_fit_score ≥ 0.4
    
    THEN: Recommend add A4AA to existing Enterprise contract
    REASON: Unlock Token Vault, CIBA, M2M token pool for AI agents
@@ -185,7 +187,7 @@ MAU_at_month_N = current_mau × (1 + growth_rate) ^ N
 Current MAU: 500
 Monthly growth: 15% (0.15)
 
-Month 1: 500 · Month 12: ~2,456 · Month 28: ~25,000 ← reaches Free tier limit (25k)
+Month 1: ~575 · Month 12: ~2,675 · Month 28: ~25,033 ← reaches Free tier limit (25k)
 
 Result: "At 15% monthly growth from 500 MAU you reach the Free tier's 25,000-MAU limit in ~28 months — MAU urgency is LOW; choose a plan on feature-fit, not capacity."
 
@@ -198,7 +200,7 @@ Result: "At 15% monthly growth from 500 MAU you reach the Free tier's 25,000-MAU
 - B2B Essentials: up to 20,000 MAU · B2B Professional: up to ~20,000 MAU (beyond = Contact us)
 - Enterprise: Custom (contact sales)
 
-Note: the `< 40k` / `> 40k` / `50k ceiling` thresholds in the decision tree above were written against an old flat 50k assumption. Read the real per-track ceiling from pricing.md and treat those branches as "approaching the customer's published MAU ceiling."
+Note: the decision tree compares `current_mau` against `track_ceiling` — the tenant's published per-track MAU limit (read from pricing.md), not a flat number. "Approaching" means `current_mau ≥ 80% of track_ceiling`.
 
 ### Output Format
 
@@ -294,6 +296,7 @@ FEATURES THAT UNLOCK:
 IF ai_use_case == true 
    AND integrations.length > 0 
    AND integrations CONTAINS (Gmail, Slack, Salesforce, Stripe, HubSpot, GitHub, Jira, etc.)
+   AND a4aa_fit_score ≥ 0.4
    
    THEN: A4AA is relevant
    
