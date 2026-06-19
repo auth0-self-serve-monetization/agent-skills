@@ -35,6 +35,7 @@
     "swift",
     "swift-major-migration",
     "android",
+    "android-major-migration",
     "aspnetcore",
     "dotnet",
     "ionic",

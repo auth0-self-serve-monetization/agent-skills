@@ -49,6 +49,7 @@
         "swift",
         "swift-major-migration",
         "android",
+        "android-major-migration",
         "flutter-native",
         "flutter-web",
         "flutter",
