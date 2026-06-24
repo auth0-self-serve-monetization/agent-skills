@@ -1,0 +1,42 @@
+[
+  {
+    "type": "contains",
+    "value": "auth0 login",
+    "description": "Auth0 CLI login or session check is present"
+  },
+  {
+    "type": "matches",
+    "pattern": "~/.auth0-checkmate\\.env",
+    "description": "Credentials file path is ~/.auth0-checkmate.env"
+  },
+  {
+    "type": "matches",
+    "pattern": "chmod 600",
+    "description": "Credentials file is restricted to owner-only permissions"
+  },
+  {
+    "type": "matches",
+    "pattern": "<tenant_domain>|<client_id>|<client_secret>|Replace.*placeholder",
+    "description": "Heredoc placeholders are explicitly flagged for substitution"
+  },
+  {
+    "type": "matches",
+    "pattern": "~/.auth0-checkmate/state/",
+    "description": "State dir is ~/.auth0-checkmate/state/ (not ~/.claude/skills/)"
+  },
+  {
+    "type": "matches",
+    "pattern": "Immediate Actions|After Upgrading",
+    "description": "Report triages findings into immediate vs post-upgrade sections"
+  },
+  {
+    "type": "matches",
+    "pattern": "\\.md.*\\.html.*\\.pdf|\\.pdf.*\\.html.*\\.md",
+    "description": "Report is saved in markdown, HTML, and PDF formats"
+  },
+  {
+    "type": "not_contains",
+    "value": "fit score",
+    "description": "Report does not include sales fit scores"
+  }
+]

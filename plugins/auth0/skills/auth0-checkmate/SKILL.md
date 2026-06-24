@@ -212,7 +212,7 @@ EOF
 chmod 600 "$ENV_FILE"
 ```
 
-Substitute the three `<...>` placeholders before writing (the heredoc is single-quoted to prevent unintended expansion — replace with double-quoted `<<EOF` if you need to interpolate). The skill reloads this file in Phase 4 via `source`. The user does NOT need to add anything to their shell rc — but they can, for convenience: `echo 'source ~/.auth0-checkmate.env' >> ~/.zshrc` (or `~/.bashrc`).
+**Replace `<tenant_domain>`, `<client_id>`, and `<client_secret>` with the values from Phase 2 before writing this file.** The heredoc is single-quoted to prevent shell expansion — substitute inline, e.g. `sed -i "s/<tenant_domain>/$DOMAIN/" ~/.auth0-checkmate.env`, or open the file in an editor. The skill reloads this file in Phase 4 via `source`. The user does NOT need to add anything to their shell rc — but they can, for convenience: `echo 'source ~/.auth0-checkmate.env' >> ~/.zshrc` (or `~/.bashrc`).
 
 Save `client_id` (NOT the secret) to the state file.
 
@@ -417,10 +417,9 @@ auth0_checkmate_<sanitized_tenant>_<YYYYMMDD_HHMMSS>.pdf
 
 ### Render the PDF
 ```bash
-"$SKILL_DIR/scripts/render_pdf.sh" "$HTML_PATH" "$PDF_PATH"
-# SKILL_DIR is the absolute path to this skill folder.
-# Claude Code: substitute ${CLAUDE_SKILL_DIR}.
-# Other agents: substitute the path where the customer extracted auth0-checkmate/ (typically near where you read SKILL.md).
+"${CLAUDE_SKILL_DIR}/scripts/render_pdf.sh" "$HTML_PATH" "$PDF_PATH"
+# ${CLAUDE_SKILL_DIR} is the absolute path to this skill folder (auto-set by Claude Code).
+# Other agents: substitute the absolute path to wherever auth0-checkmate/ was extracted.
 ```
 
 If the script exits non-zero, surface the renderer's error message — the markdown and HTML are already saved, so the user has fallback artifacts. Common cause: no Chrome / Chromium / Edge / Brave / Arc app installed and no `wkhtmltopdf` / `weasyprint`. The script's stderr message tells the user how to fix.

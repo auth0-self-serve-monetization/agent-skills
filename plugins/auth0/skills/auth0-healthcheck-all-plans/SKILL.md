@@ -26,7 +26,7 @@ metadata:
 
 You produce a **plan-agnostic** Auth0 tenant health check for any segment — Free, self-service paid (Essentials / Professional), or Enterprise. It fuses **CheckMate-style security/config hygiene** with **use-case capability fit**, gives **two scores**, makes **tier-adaptive** recommendations, and can **optionally apply approved fixes** via the Auth0 CLI.
 
-This skill **orchestrates** the `auth0-checkmate` sister skill rather than reimplementing it: CheckMate runs the tenant scan + findings **and** gathers the lightweight company/use-case context (its Phase 3) that the Capability Fit track and the use-case-based plan recommendation build on.
+This skill **orchestrates** the `auth0-checkmate` sister skill rather than reimplementing it: CheckMate runs the tenant scan + findings **and** gathers the lightweight company/use-case context (its Phase 3) that the Capability Fit track and the use-case-based plan recommendation build on. **Sequencing constraint:** `auth0-checkmate` must complete through at least Phase 3 before this skill's Phase 2 (use-case classification) can begin — Phase 2 depends on the company context that CheckMate's Phase 3 produces.
 
 References — open these when you need detail:
 - [references/use-case-detection-logic.md](references/use-case-detection-logic.md) — classify B2B/B2C/AI/regulated (Phase 2)
@@ -55,6 +55,8 @@ References — open these when you need detail:
 
 ### Phase 0 — Gather inputs (orchestrated; the user pre-stages nothing)
 
+State dir: `~/.auth0-checkmate/state/` (shared with the `auth0-checkmate` skill so the enrichment cache is reused). Files: `operator.json`, `setup.json` (cache; re-validate each run), `enrichment_<domain>_<ts>.json`, `queue.json`, `history.jsonl`.
+
 1. **Reviewer:** read `state/operator.json`. If missing, ask name + optional team/org. Blank org → the report subtitle is omitted (the common self-audit case). An optional `ae_link` may be stored for the Talk-to-Sales block.
 2. **CheckMate (tenant facts + findings):** if the user has a CheckMate report (JSON), use it; otherwise **invoke the `auth0-checkmate` sister skill** to generate one (it bootstraps the CLI + M2M app and runs the audit; the user only completes the Auth0 device login). Parse findings from `data.report.summary[]` — each has `severity` (`info` | `warning` | `critical`), `title`, `severity_message`.
 3. **Company context (company/use-case):** if provided, use it; otherwise it comes from the `auth0-checkmate` run — CheckMate's Phase 3 gathers lightweight public company context (business model, use case, products, login portals, third-party integrations) from the company domain. If CheckMate isn't run, gather the same context inline or ask the user. Record **provenance** (live research vs. training-knowledge fallback) and a **confidence** note.
@@ -82,7 +84,7 @@ One universal assessment, two scored tracks (full definitions + bands in [refere
 
 **3A — Security & Config Hygiene (universal, plan-independent).** From CheckMate `summary[]`: count by severity, compute the **Hygiene Score**. This is a security claim — **if there was no CheckMate scan, do NOT emit a number** ("Not scored — run a CheckMate audit"); mark low-confidence. Output feeds Part A + Phase 7 Loop A.
 
-**3B — Capability Fit (tier-aware framing, plan-independent number).** Build the feature-gap matrix: required features for the use case ([references/feature-recommendations.md](references/feature-recommendations.md), including the use-case capability + FOUNDATIONAL items from [references/production-readiness-checklist.md](references/production-readiness-checklist.md) so the score stays graduated) vs. configured, marked ✅ / ❌ / ⚠️. (Production-readiness itself = Part A / CheckMate; Part B is the use-case *expansion* layer.) Tag each gap's **Plan Home** via [references/feature-unlock-matrix.md](references/feature-unlock-matrix.md) + [references/pricing.md](references/pricing.md): *Available now on `current_plan`* / *Unlocks on `<plan>`* / *Enterprise-only*. Compute the **Capability Fit Score**. The number is the same on any plan; only the framing/remediation path differs.
+**3B — Capability Fit (tier-aware framing, plan-independent number).** Build the feature-gap matrix: required features for the use case ([references/feature-recommendations.md](references/feature-recommendations.md), including the use-case capability + FOUNDATIONAL items from [references/production-readiness-checklist.md](references/production-readiness-checklist.md) so the score stays graduated) vs. configured, marked ✅ / ❌ / ⚠️. (Production-readiness itself = Part A / CheckMate; Part B is the use-case *expansion* layer.) Tag each gap's **Plan Home** via [references/feature-unlock-matrix.md](references/feature-unlock-matrix.md) + [references/pricing.md](references/pricing.md): *Available now on `current_plan`* / *Unlocks on `<plan>`* / *Enterprise-only*. Compute the **Capability Fit Score**. The number is the same on any plan; only the framing/remediation path differs. **Also compute `a4aa_fit_score`** (0–1) from use-case + integration signals per [references/data-integrity-rules.md](references/data-integrity-rules.md) — this value is the gate in Phase 4's A4AA add-on recommendation.
 
 ### Phase 4 — Tier-adaptive recommendation
 
@@ -110,6 +112,8 @@ auth0_healthcheck_<sanitized_tenant>_<YYYYMMDD_HHMMSS>.{md,html,pdf}
 Markdown per [references/report-template.md](references/report-template.md); HTML per [references/report-template.html](references/report-template.html); PDF via:
 ```bash
 ${CLAUDE_SKILL_DIR}/scripts/render_pdf.sh "$HTML_PATH" "$PDF_PATH"
+# ${CLAUDE_SKILL_DIR} = absolute path to this skill folder (auto-set by Claude Code).
+# Other agents: substitute the absolute path to wherever auth0-healthcheck-all-plans/ was extracted.
 ```
 If the renderer exits non-zero, surface its stderr — the md + html are already saved (don't fail the run).
 

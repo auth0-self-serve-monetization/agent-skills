@@ -1,0 +1,42 @@
+[
+  {
+    "type": "matches",
+    "pattern": "auth0-checkmate|CheckMate",
+    "description": "Orchestrates the auth0-checkmate sister skill"
+  },
+  {
+    "type": "matches",
+    "pattern": "Security.*Hygiene|Hygiene.*Score",
+    "description": "Produces a Security & Config Hygiene score"
+  },
+  {
+    "type": "matches",
+    "pattern": "Capability Fit|Capability.*Score",
+    "description": "Produces a Capability Fit score"
+  },
+  {
+    "type": "matches",
+    "pattern": "a4aa_fit_score|A4AA.*fit|data-integrity-rules",
+    "description": "Computes a4aa_fit_score before the A4AA add-on gate"
+  },
+  {
+    "type": "matches",
+    "pattern": "enterprise.*need|enterprise-need-detection",
+    "description": "Runs enterprise-need detection before plan matching"
+  },
+  {
+    "type": "matches",
+    "pattern": "~/.auth0-checkmate/state/",
+    "description": "State dir is ~/.auth0-checkmate/state/ (shared with auth0-checkmate)"
+  },
+  {
+    "type": "matches",
+    "pattern": "\\$\\{CLAUDE_SKILL_DIR\\}|CLAUDE_SKILL_DIR",
+    "description": "Uses ${CLAUDE_SKILL_DIR} for PDF renderer path"
+  },
+  {
+    "type": "matches",
+    "pattern": "pricing\\.md|\\$[0-9]|per month",
+    "description": "Plan recommendation includes exact cost from pricing.md"
+  }
+]
