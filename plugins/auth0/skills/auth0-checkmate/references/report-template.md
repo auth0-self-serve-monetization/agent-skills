@@ -115,7 +115,7 @@ Include only the rows whose triggers are met. Rewrite the cell text to reference
 1. {{immediate_action_1}}
 2. {{immediate_action_2}}
 3. {{immediate_action_3}}
-{{...}}
+<!-- continue numbering for each remaining action -->
 
 > Illustrative shape (dummy data — replace every name with the actual tenant's apps):
 > 1. Remove `http://localhost:3000` from web origins, callbacks, and logout URLs in `Customer Portal Web`
@@ -129,7 +129,7 @@ Include only the rows whose triggers are met. Rewrite the cell text to reference
 
 1. {{after_upgrade_action_1}}
 2. {{after_upgrade_action_2}}
-{{...}}
+<!-- continue numbering for each remaining action -->
 
 > Example items from the reference sample (Custom Domains is NOT here — it's free; see Immediate Actions):
 > 1. Set up Auth0 Organizations + Enterprise Connections (SAML / OIDC) for your first enterprise clients (Essentials)

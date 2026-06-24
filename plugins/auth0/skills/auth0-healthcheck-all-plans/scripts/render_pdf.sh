@@ -110,13 +110,13 @@ fi
 if command -v wkhtmltopdf >/dev/null 2>&1; then
   echo "render_pdf: using wkhtmltopdf" >&2
   wkhtmltopdf --enable-local-file-access "$INPUT_ABS" "$OUTPUT_ABS"
-  exit 0
+  exit $?
 fi
 
 if command -v weasyprint >/dev/null 2>&1; then
   echo "render_pdf: using weasyprint" >&2
   weasyprint "$INPUT_ABS" "$OUTPUT_ABS"
-  exit 0
+  exit $?
 fi
 
 cat >&2 <<EOF

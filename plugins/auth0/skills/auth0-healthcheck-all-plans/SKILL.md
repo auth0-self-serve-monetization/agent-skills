@@ -133,7 +133,7 @@ Enter only on explicit opt-in. Use [references/remediation-command-map.md](refer
 
 Close out: update state, append to `history.jsonl`, print applied/queued/skipped counts, suggest re-running the health check to confirm fixes.
 
-State dir: `~/.claude/skills/auth0-healthcheck-all-plans/state/` (`operator.json`, `setup.json` (cache; secrets excluded), `enrichment_<domain>_<ts>.json`, `queue.json`, `history.jsonl`). Treat `setup.json` as a cache — re-validate each run.
+State dir: `~/.auth0-checkmate/state/` (`operator.json`, `setup.json` (cache; secrets excluded), `enrichment_<domain>_<ts>.json`, `queue.json`, `history.jsonl`). Treat `setup.json` as a cache — re-validate each run.
 
 ---
 
